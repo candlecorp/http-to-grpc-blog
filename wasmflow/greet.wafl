@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://wasmflow.com/schema.json
+---
+version: 1
+external:
+  getting_started:
+    kind: Wasm
+    reference: reg.candle.run/candle/getting-started
+components:
+  hello:
+    collections:
+      - getting_started
+    instances:
+      greet: getting_started::greet
+      concatenate: getting_started::concatenate
+    flow:
+      - <>.first_name -> concatenate.left
+      - <>.last_name -> concatenate.right
+      - concatenate.output -> greet.input
+      - greet.output -> <>

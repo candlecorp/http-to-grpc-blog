@@ -1,0 +1,55 @@
+version: '3'
+
+volumes:
+  prometheus_data: {}
+
+services:
+  wasmflow:
+    build:
+      context: ./wasmflow
+      dockerfile: Dockerfile
+    ports:
+      - "8060:8060"
+    volumes:
+      - ./wasmflow/greet.wafl:/opt/wasmflow/app/greet.wafl
+    entrypoint:
+      [
+        "wasmflow",
+        "serve",
+        "/opt/wasmflow/app/greet.wafl",
+        "--rpc",
+        "--rpc-port",
+        "8060",
+        "--rpc-address",
+        "0.0.0.0"
+      ]
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client/gen_traffic.sh:/opt/wasmflow/app/gen_traffic.sh
+    entrypoint: "sleep 300"
+
+  envoy:
+    image: envoyproxy/envoy-dev:0d510b808118afa0073e820409061f6f7ed1aa3a
+    ports:
+      - "9901:9901"
+      - "8080:8080"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./envoy/json.lua:/lua/json.lua
+      - ./envoy/convert.lua:/lua/convert.lua
+      - ./envoy/wasmflow.pb:/etc/envoy/wasmflow.pb
+
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
