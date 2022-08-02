@@ -41,6 +41,6 @@ wasmflow_requests_time_total{component="%s"} %s
     -- set response body and update content length and content type
     local content_length = response_handle:body(true):setBytes(out_body)
     response_handle:headers():replace("content-length", content_length)
-    response_handle:headers():replace("content-type", "text/html")
+    response_handle:headers():replace("content-type", "text/plain")
 
 end
