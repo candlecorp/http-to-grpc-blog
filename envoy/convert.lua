@@ -1,13 +1,16 @@
 local json = require("lua.json")
 
 function envoy_on_response(response_handle)
-    -- get the body
+    -- read the body
     local body = response_handle:body(true)
     local body_size = body:length()
     local body_bytes = body:getBytes(0, body_size)
+
+    -- parse as JSON
     local raw_json_text = tostring(body_bytes)
     local response_json = json.decode(raw_json_text)
 
+    -- create a text output using on JSON values
     local out_body = [[
 # HELP wasmflow_requests_total Total number of requests to wasmflow components.
 # TYPE wasmflow_requests_total counter
