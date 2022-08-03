@@ -5,12 +5,12 @@ do
     rand=$(( $RANDOM % 100 + 1 ))
     if [ $rand -gt 70 ] 
     then
-        wafl rpc hostname=envoy invoke --port=8080 hello -- --first_name=Jane --last_name=Doe
+        wafl rpc invoke --address=envoy --port=8080 hello -- --first_name=Jane --last_name=Doe
     fi
     if [ $rand -lt 5 ] 
     then
         # 5% chance of error
-        wafl rpc hostname=envoy invoke --port=8080 greet -- --adfasfasfasdfas=unknown
+        wafl rpc invoke --address=envoy --port=8080 greet -- --adfasfasfasdfas=unknown
     fi
     sleep 0.25
 done
